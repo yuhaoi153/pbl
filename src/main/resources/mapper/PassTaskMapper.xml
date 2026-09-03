@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.PassTaskMapper">
+    <insert id="addContent">
+        insert into homework.passtask (content, class_number, subject,supplementary) VALUES
+
+                                                                                         (#{content},#{classNumber},#{subject},#{supplementary})
+    </insert>
+    <insert id="addRecordPass" useGeneratedKeys="true" keyProperty="id">
+        insert into homework.recordtask (content, class_number, subject,checkdate,completed,name,supplementary) VALUES
+                                                                                         (#{content},#{classNumber},#{subject},#{checkdate},#{completed},#{name},#{supplementary})
+
+    </insert>
+    <update id="editRecordPass">
+        update homework.recordtask set class_number = #{classNumber}, content = #{content}, subject = #{subject}, checkdate = #{checkdate}, completed = #{completed}, name = #{name}, supplementary = #{supplementary}
+        where id = #{id}
+    </update>
+
+
+    <delete id="batchDelete">
+        delete from homework.passtask where class_number = #{classNumber} and subject = #{subject} and content in <foreach
+            collection="contentList" separator="," item="content" open="(" close=")">
+        #{content}
+    </foreach>
+    </delete>
+    <delete id="deleteByIDs">
+        delete from homework.recordtask where id in <foreach collection="ids" item="id" separator="," open="(" close=")">  #{id} </foreach>
+    </delete>
+
+    <select id="queryContent" resultType="java.lang.String">
+        select content from homework.passtask
+        <where>
+            <if test = "content != null and content !=''"> and content = #{content}</if>
+            <if test = "subject != null and subject !=''">and subject = #{subject}</if>
+            <if test = "classNumber != null and classNumber !=''">and class_number = #{classNumber}</if>
+            <if test = "type != null and type !=''">and type = #{type}</if>
+        </where>
+    </select>
+    <select id="queryALlPassContent" resultType="flyfish.pojo.PassTask">
+        select * from homework.recordtask
+        <where>
+            <if test="content!= null and content != ''">
+                and content like concat('%',#{content},'%')
+            </if>
+            <if test="classNumber!= null and classNumber != ''">
+                and class_number = #{classNumber}
+            </if>
+            <if test="subject!= null and subject != ''">
+                and subject = #{subject}
+            </if>
+            <if test="startdate!= null">
+                and checkdate between #{startdate} and #{enddate}
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="completed != null">
+                AND completed = #{completed}
+            </if>
+
+        </where>
+    </select>
+
+
+</mapper>

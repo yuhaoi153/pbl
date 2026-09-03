@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ClubStudentInfoMapper">
+
+    <update id="batchUpdateFirstStudentStatus">
+        UPDATE miniprograme.clubStudentInfo
+        SET firstChooseStatus = 1
+        <where>
+            firstChoiceId = #{activeClubId}
+            <choose>
+                <when test="selectedStudents != null and selectedStudents.size() > 0">
+                    AND userId IN
+                    <foreach collection="selectedStudents" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND 1 = 0
+                </otherwise>
+            </choose>
+        </where>
+    </update>
+
+    <update id="batchUpdateSecondStudentStatus">
+        UPDATE miniprograme.clubStudentInfo
+        SET secondChooseStatus = 1
+        WHERE secondChoiceId = #{activeClubId}
+        <choose>
+            <when test="selectedStudents != null and selectedStudents.size() > 0">
+                AND userId IN
+                <foreach collection="selectedStudents" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                AND 1 = 0 <!-- 当列表为空时，不更新任何记录 -->
+            </otherwise>
+        </choose>
+    </update>
+
+    <update id="batchUpdateThirdStudentStatus">
+        UPDATE miniprograme.clubStudentInfo
+        SET thirdChooseStatus = 1
+        WHERE thirdChoiceId = #{activeClubId}
+        <choose>
+            <when test="selectedStudents != null and selectedStudents.size() > 0">
+                AND userId IN
+                <foreach collection="selectedStudents" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                AND 1 = 0 <!-- 当列表为空时，不更新任何记录 -->
+            </otherwise>
+        </choose>
+    </update>
+    <update id="batchUpdateRemainClubStudentStatus">
+        UPDATE miniprograme.clubStudentInfo
+        SET firstChooseStatus = 1 , firstChoiceId = #{remainId}
+        <where>
+        <choose>
+            <when test="selectedStudents != null and selectedStudents.size() > 0">
+               userId IN
+                <foreach collection="selectedStudents" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                AND 1 = 0 <!-- 当列表为空时，不更新任何记录 -->
+            </otherwise>
+        </choose></where>
+
+    </update>
+    <delete id="deleteAllSameClubStudentInfos">
+        delete from miniprograme.clubStudentInfo where <foreach collection="userList" item="item" separator="or">
+            (studentName = #{item.name} and studentGrade = #{item.grade} and studentClass = #{item.classNumber} and admissionSemester = #{item.admissionSemester})
+        </foreach>
+    </delete>
+    <delete id="deleteClubStudentInfosByUserIds">
+        delete from miniprograme.clubStudentInfo
+        where userId in
+        <foreach collection="studentIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach> and admissionSemester = #{admissionSemester}
+    </delete>
+    <select id="getUserIdsByGrade" resultType="java.lang.Integer">
+        select distinct userId from miniprograme.clubStudentInfo
+        <where>
+            <if test="grade != null">
+               and studentGrade = #{grade}
+            </if>
+            <if test="admissionSemester != null">
+                and admissionSemester = #{admissionSemester}
+            </if>
+        </where>
+    </select>
+
+</mapper>

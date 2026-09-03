@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_CertificationMapper">
+
+
+<!--    // 自增id-->
+
+    <insert id="addSingleRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO miniprograme.certification ( imageUrl, display,type, awardLevel, content, regionLevel, userName, awardName, personal, supplement, awardTime, organization,school,judgeRepeat,repeatId)
+            VALUES (#{imageUrl}, #{display}, #{type}, #{awardLevel}, #{content}, #{regionLevel}, #{userName}, #{awardName}, #{personal}, #{supplement}, #{awardTime}, #{organization}, #{school},#{judgeRepeat},#{repeatId})
+    </insert>
+
+    <update id="updateSingleRecord">
+        UPDATE miniprograme.certification
+        SET imageUrl = #{imageUrl},
+            display = #{display},
+            type = #{type},
+            awardLevel = #{awardLevel},
+            content = #{content},
+            regionLevel = #{regionLevel},
+            userName = #{userName},
+            awardName = #{awardName},
+            personal = #{personal},
+            supplement = #{supplement},
+            awardTime = #{awardTime},
+            organization = #{organization}
+        WHERE id = #{id}
+    </update>
+    <select id="getAllCertificationsByItems" resultType="flyfish.pojo.M_Certification">
+        SELECT id , imageUrl, createTime,type,awardLevel,content,regionLevel,userName as teacherName,awardName,personal,supplement,awardTime,organization,school,judgeRepeat ,repeatId
+        FROM miniprograme.certification
+            <where>
+                <if test="school != null and school != ''">
+                    AND school = #{school}
+                </if>
+                <if test="type != null and type != ''">
+                    AND type = #{type}
+                </if>
+                <if test="awardLevel != null and awardLevel != ''">
+                    AND awardLevel = #{awardLevel}
+                </if>
+                <if test="regionLevel != null and regionLevel != ''">
+                    AND regionLevel = #{regionLevel}
+                </if>
+                <if test="userName != null and userName != ''">
+                    AND userName = #{userName}
+                </if>
+                <if test="personal != null and personal != ''">
+                    AND personal = #{personal}
+                </if>
+                <if test="startDate != null and endDate != null">
+                    AND awardTime BETWEEN #{startDate} AND #{endDate}
+                </if>
+            </where>
+    </select>
+
+</mapper>

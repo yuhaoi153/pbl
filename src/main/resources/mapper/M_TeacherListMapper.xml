@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_TeacherListMapper">
+
+    <insert id="editGradeClassNum">
+        insert into miniprograme.grade_classname (grade,class_name,school)
+        values <foreach collection="classList" item="cl" separator=",">
+        (#{cl.grade},#{cl.className},#{cl.school})
+    </foreach>
+    </insert>
+    <insert id="uploadTeacherList">
+        insert into miniprograme.teacherList(teacher_name,subject,school)
+        values <foreach collection="teacherDataList" item="td" separator=",">
+        (#{td.teacherName},#{td.subject},#{td.school})
+    </foreach>
+    </insert>
+
+    <insert id="newTeacher" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into miniprograme.teacherList(teacher_name, subject, school)
+        values (#{teacherName}, #{subject}, #{school})
+    </insert>
+    <update id="editTeacherById">
+        update miniprograme.teacherList
+        set teacher_name = #{teacherName}, subject = #{subject}
+        where id = #{id}
+    </update>
+    <delete id="deleteTeacherListByIDList">
+        delete from miniprograme.teacherList where id in
+        <foreach collection="idList" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getTeacherIdList" resultType="java.lang.Integer">
+        SELECT id
+        FROM miniprograme.teacherList
+        WHERE teacher_name IN
+        <foreach collection="relationList" item="rl" separator="," open="(" close=")">
+            #{rl.teacherName}
+        </foreach>
+        AND school = #{relationList[0].school} <!-- 假设所有教师都来自同一学校 -->
+        ORDER BY FIELD(teacher_name,
+        <foreach collection="relationList" item="rl" separator=",">
+            #{rl.teacherName}
+        </foreach>)
+    </select>
+
+    <select id="getTeacherSubjectList" resultType="java.lang.String">
+        SELECT subject
+        FROM miniprograme.teacherList
+        WHERE teacher_name IN
+        <foreach collection="readingTeacherNameListNew" item="rt" separator="," open="(" close=")">
+            #{rt}
+        </foreach>
+        AND school = #{school}
+        ORDER BY FIELD(teacher_name,
+        <foreach collection="readingTeacherNameListNew" item="rt" separator=",">
+            #{rt}
+        </foreach>)
+    </select>
+    <select id="getTeacherNameById" resultType="java.lang.String">
+        SELECT teacher_name
+        FROM miniprograme.teacherList
+        WHERE id in <foreach collection="teacherIdList" item="id" separator="," open="(" close=")">
+            #{id} </foreach>
+
+        and school = #{school}
+    </select>
+    <select id="getTeacherInfoByTeacherName" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.teacherList
+        <where>
+            <if test="content != null and content != ''">
+                teacher_name = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+    <select id="getTeacherInfoBySubject" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.teacherList
+        <where>
+            <if test="content != null and content != ''">
+                subject = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+
+
+</mapper>

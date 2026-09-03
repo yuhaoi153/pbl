@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_PhotoimgMapper">
+    <insert id="addPhotoimg">
+        insert into miniprograme.photo (url,position,school,name) values (#{url},#{position},#{school},#{name})
+
+    </insert>
+    <delete id="deletePhotoimg">
+        delete from miniprograme.photo
+<foreach collection="ids" item="id" open="where id in (" separator="," close=")">#{id}</foreach>
+
+    </delete>
+
+
+    <select id="getPhotoimg" resultType="flyfish.pojo.VO.M_BackGroundVO">
+        SELECT * FROM miniprograme.photo <where>
+        <if test="position != null and position != ''">
+            AND position = #{position}</if>
+        <if test="school != null and school != ''">
+            AND school = #{school}</if> </where>
+    </select>
+</mapper>

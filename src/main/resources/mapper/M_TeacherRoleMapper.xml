@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_TeacherRoleMapper">
+    <insert id="batchInsertTeacherRole">
+        insert into miniprograme.teacherRole (userId, title,teacherName,school)
+        values
+        <foreach collection="teacherRoleList" item="teacherRole" separator=",">
+            (#{teacherRole.userId}, #{teacherRole.title}, #{teacherRole.teacherName}, #{teacherRole.school})
+        </foreach>
+    </insert>
+
+
+    <delete id="batchDeleteTeacherRoleByUserIds">
+        delete from miniprograme.teacherRole
+        where userId in
+        <foreach collection="userList" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </delete>
+    <delete id="batchDeleteTeacherRoleByIdList">
+        delete from miniprograme.teacherRole
+        where userId in
+        <foreach collection="idList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="getTeacherSchoolByUserIds" resultType="flyfish.pojo.M_TeacherRole">
+        select teacherName,school from miniprograme.teacherRole
+        where userId in
+        <foreach collection="idList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

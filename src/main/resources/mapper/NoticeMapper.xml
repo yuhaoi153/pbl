@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.NoticeMapper">
+    <insert id="addNotice">
+        insert into homework.notificationInfo (name,subject,mail,phone,check_mail,check_phone,class_number,school)
+        values <foreach collection="noticeList" separator="," item="n" >
+        (#{n.name},#{n.subject},#{n.mail},#{n.phone},#{n.checkMail},#{n.checkPhone},#{classNumber},#{school})
+    </foreach>
+    </insert>
+
+
+
+
+
+
+</mapper>

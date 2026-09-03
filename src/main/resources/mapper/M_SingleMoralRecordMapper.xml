@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_SingleMoralRecordMapper">
+
+
+    <select id="getNameByStudentIds" resultType="java.lang.String">
+        select student_name from miniprograme.singleMoralRecord where school = #{school} and check_date = #{checkDate}
+        and supplement = #{tag} and label = #{label} and studentId in
+        <foreach item='item' collection='studentIdList' open='(' separator=',' close=')'>#{item}</foreach>
+    </select>
+    <select id="getClassNum" resultType="java.lang.Integer">
+        select count(*) from miniprograme.singleMoralRecord where school = #{school} and check_date = #{checkDate} and
+        label in
+        <foreach collection="praiseLabelList" item="label" open="(" separator="," close=")">#{label}</foreach>
+    </select>
+    <select id="getGradeClassCountScore" resultType="flyfish.pojo.VO.M_ClassCountVO">
+        <!-- 用LEFT(grade,1)截取grade第一个字符，再拼接class_name和"班" -->
+        select CONCAT(IFNULL(LEFT(grade, 1), ''), class_name, '班') as className,
+        count(class_name) * #{score} as classCount
+        from miniprograme.singleMoralRecord
+        where school = #{school}
+        <if test="label !=null and label != ''">
+            and label = #{label}
+        </if>
+        <if test="grade !=null and grade != ''">
+            and grade = #{grade}
+        </if>
+        and check_date between #{startDate} and #{endDate}
+        group by grade, class_name  <!-- 仍需按完整grade+class_name分组，避免首字符相同的不同年级被合并 -->
+        order by classCount desc
+    </select>
+    <select id="getMoralRecordByDateRange" resultType="flyfish.pojo.M_SingleMoralRecord">
+        select * from miniprograme.singleMoralRecord where school = #{school} and check_date between #{startDate} and
+        #{endDate}
+        <if test="grade !=null and grade != ''">
+            and grade = #{grade}
+        </if>
+
+
+    </select>
+</mapper>

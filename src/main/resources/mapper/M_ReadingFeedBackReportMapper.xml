@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ReadingFeedbackReportMapper">
+
+    <update id="editFeedbackContent">
+        UPDATE miniprograme.readingFeedbackReport
+        <set>
+            <if test="preface != null">
+                preface = #{preface},
+            </if>
+            <if test="preClassManage != null">
+                preClassManage = #{preClassManage},
+            </if>
+            <if test="postClassManage != null">
+                postClassManage = #{postClassManage},
+            </if>
+            <if test="preTeacherManage != null">
+                preTeacherManage = #{preTeacherManage},
+            </if>
+            <if test="postTeacherManage != null">
+                postTeacherManage = #{postTeacherManage},
+            </if>
+            <if test="preClassReading != null">
+                preClassReading = #{preClassReading},
+            </if>
+            <!-- 这里修正了原代码中的拼写错误 mpostClassReading -->
+            <if test="postClassReading != null">
+                postClassReading = #{postClassReading},
+            </if>
+            <if test="preTeacherReading != null">
+                preTeacherReading = #{preTeacherReading},
+            </if>
+            <if test="postTeacherReading != null">
+                postTeacherReading = #{postTeacherReading},
+            </if>
+            <if test="preClassPrepare != null">
+                preClassPrepare = #{preClassPrepare},
+            </if>
+            <if test="postClassPrepare != null">
+                postClassPrepare = #{postClassPrepare},
+            </if>
+            <if test="preTeacherPrepare != null">
+                preTeacherPrepare = #{preTeacherPrepare},
+            </if>
+            <if test="postTeacherPrepare != null">
+                postTeacherPrepare = #{postTeacherPrepare},
+            </if>
+            <if test="finalComment != null">
+                finalComment = #{finalComment}
+            </if>
+        </set>
+        WHERE school = #{school}
+    </update>
+</mapper>

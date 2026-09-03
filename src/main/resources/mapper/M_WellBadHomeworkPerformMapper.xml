@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_WellBadHomeworkPerformMapper">
+
+    <select id="getAllRecord" resultType="flyfish.pojo.M_WellBadHomeworkPerform">
+
+select * from miniprograme.wellBadHomeworkPerform where school = #{school} and checkDate between #{startDate} and #{endDate} <if test="studentName !=null and studentName != ''">
+            and studentName = #{studentName} </if> and supplementary = #{content} and className = #{className} and subject = #{subject}
+    </select>
+    <select id="getPunishRecord" resultType="flyfish.pojo.M_WellBadHomeworkPerform">
+        select * from miniprograme.wellBadHomeworkPerform where school = #{school} <if test = "startDate != null and endDate != null" > and checkDate between #{startDate} and #{endDate}</if> and className =#{className} and subject = #{subject} and showItem = #{showItem}   </select>
+</mapper>

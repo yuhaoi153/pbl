@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.PBL_QuestionAnswerMapper">
+
+
+
+    <insert id="addItem" useGeneratedKeys="true" keyProperty="id">
+        insert into pbl.questionAnswer(username, school, lessonName, checkDate, questionType, questionContent, questionName, answerContent, pageName, referenceAnswer, answerType, questionId, score,comment,supplementary) VALUES
+            (#{username}, #{school}, #{lessonName}, #{checkDate}, #{questionType}, #{questionName}, #{questionName}, #{answerContent}, #{pageName}, #{referenceAnswer}, #{answerType}, #{questionId}, #{score},#{comment},#{supplementary})
+    </insert>
+    <select id="getVoteResult" resultType="flyfish.pojo.PBLpojo.PBL_VoteDTO">
+        select * from pbl.questionAnswer where school = #{school} and lessonName = #{lessonName}  and pageName = #{pageName} <if test="username != null  and username != '' "> and username = #{username}</if> and checkDate = #{checkDate}
+    </select>
+    <select id="getQuestionInfo" resultType="flyfish.pojo.PBLpojo.PBL_QuestionItem">
+        select * from pbl.questionItem where pageName = #{pageName} and school = #{school} and lessonName = #{lessonName} and subject = #{subject} <if test="checkDate != null"> and checkDate = #{checkDate}</if> </select>
+</mapper>

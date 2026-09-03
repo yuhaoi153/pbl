@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ExaminationMapper">
+
+
+    <insert id="batchInsert" >
+        INSERT INTO miniprograme.examination (
+        studentName,
+        grade,
+        className,
+        score,
+        subject,
+        createName,
+        imageUrl,
+        testName,
+        semester,
+        year,
+        createTime,
+    status
+        ) VALUES
+        <foreach collection="examinationList" item="item" separator=",">
+            (
+            #{item.studentName},
+            #{item.grade},
+            #{item.className},
+            #{item.score},
+            #{item.subject},
+            #{item.createName},
+            #{item.imageUrl},
+            #{item.testName},
+            #{item.semester},
+            #{item.year},
+             #{item.createTime},
+             #{item.status}
+            )
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.PerformMapper">
+    <insert id="addPerform" >
+        insert into homework.perform (class_number, name, subject , situation,reason,score,checkdate,school,year)
+        <foreach collection="nameList" item="name" separator="," open="values">
+            (#{classNumber},#{name},#{subject},#{situation},#{reason},#{score},#{checkdate},#{school},#{year})</foreach>
+
+
+    </insert>
+    <insert id="addSinglePerformReturnId" useGeneratedKeys="true" keyProperty="id">
+        insert into homework.perform (class_number, name, subject , situation,reason,score,checkdate,school,year)
+        values (#{classNumber},#{name},#{subject},#{situation},#{reason},#{score},#{checkdate},#{school},#{year})
+    </insert>
+
+    <select id="queryPerform" resultType="flyfish.pojo.VO.ParentPerformVO">
+        select * from homework.perform <where> class_number = #{classNumber} and name = #{name}
+        <if test="subject != null and subject != ''"> and subject = #{subject} </if>
+    </where> order by id desc
+    </select>
+<!--    <select id="feedbackLineChart" resultType="flyfish.pojo.VO.FeedBackLineChartVO">-->
+<!--        select-->
+<!--        checkdate as checkDate,-->
+<!--        sum(case when situation = '表扬' then 1 else 0 end) as praiseNumber,-->
+<!--        sum(case when situation = '批评' then 1 else 0 end) as criticismNumber-->
+<!--        from-->
+<!--        homework.perform-->
+<!--        where-->
+<!--        class_number = #{classNumber} and school = #{school}-->
+<!--        <if test="name != null and name != ''">-->
+<!--            and name = #{name}-->
+<!--        </if>-->
+<!--        <if test="subject != null and subject != ''">-->
+<!--            and subject = #{subject}-->
+<!--        </if>-->
+<!--        <if test="reason != null and reason != ''">-->
+<!--            and reason like concat('%', #{reason}, '%')-->
+<!--        </if>-->
+<!--        <if test="startDate != null  and endDate != null ">-->
+<!--            and checkdate between #{startDate} and #{endDate}-->
+<!--        </if>-->
+<!--        group by-->
+<!--        checkdate-->
+<!--        order by-->
+<!--        checkdate-->
+<!--    </select>-->
+<!--    <select id="feedbackNotCloude" resultType="flyfish.pojo.VO.FeedBackLineChartVO">-->
+<!--        select-->
+<!--        checkdate as checkDate,-->
+<!--        sum(case when situation = '表扬' then 1 else 0 end) as praiseNumber,-->
+<!--        sum(case when situation = '批评' then 1 else 0 end) as criticismNumber-->
+<!--        from-->
+<!--        homework.perform-->
+<!--        where-->
+<!--        class_number = #{classNumber} and school = #{school}-->
+<!--        <if test="name != null and name != ''">-->
+<!--            and name = #{name}-->
+<!--        </if>-->
+<!--        <if test="subject != null and subject != ''">-->
+<!--            and subject = #{subject}-->
+<!--        </if>-->
+<!--        <if test="reason != null and reason != ''">-->
+<!--            and reason not like concat('%','小组', '%') and reason not like concat('%','作业', '%')-->
+<!--        </if>-->
+<!--        <if test="startDate != null  and endDate != null ">-->
+<!--            and checkdate between #{startDate} and #{endDate}-->
+<!--        </if>-->
+<!--        group by-->
+<!--        checkdate-->
+<!--        order by-->
+<!--        checkdate-->
+<!--    </select>-->
+</mapper>

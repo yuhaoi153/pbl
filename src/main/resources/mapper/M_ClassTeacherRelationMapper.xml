@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ClassTeacherRelationMapper">
+
+
+    <insert id="saveRelations">
+        insert into miniprograme.class_teachers (class_id,teacher_id,class_name,teacher_name,school)
+        values <foreach collection="relationList" item="rl" separator=",">
+        (#{rl.classId},#{rl.teacherId},#{rl.className},#{rl.teacherName},#{rl.school})</foreach>
+    </insert>
+    <insert id="insetClassTeacherRelationList">
+        insert into miniprograme.class_teachers (class_id,teacher_id,class_name,teacher_name,school,headTeacher)
+        values <foreach collection="mClassTeacherRelationList" item="relation" separator=",">
+        (#{relation.classId},#{relation.teacherId},#{relation.className},#{relation.teacherName},#{relation.school},'否')</foreach>
+    </insert>
+    <delete id="deleteRelations">
+        delete from miniprograme.class_teachers where (class_id, teacher_id, school) in
+    <foreach collection="relationList" item="relation" open="(" separator="," close=")">
+        (#{relation.classId}, #{relation.teacherId}, #{relation.school})
+    </foreach>
+    </delete>
+    <delete id="deleteClassTeacherRelation">
+        delete from miniprograme.class_teachers
+        <foreach collection="idList" item="id" open="where id in (" separator="," close=")">
+            #{id}
+
+        </foreach>
+
+    </delete>
+    <delete id="deleteRelationBySchoolAndClassNameList">
+        delete from miniprograme.class_teachers
+        where school = #{school}
+        and class_name in
+        <foreach collection="deleteClassNameList" item="className" open="(" separator="," close=")">
+            #{className}
+        </foreach>
+    </delete>
+    <select id="getTeacherInfoByTeacherName" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.class_teachers
+        <where>
+            <if test="content != null and content != ''">
+                teacher_name = #{content}
+            </if>
+            and school = #{school}
+        </where>
+
+    </select>
+    <select id="getTeacherInfoByClassName" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.class_teachers
+        <where>
+            <if test="content != null and content != ''">
+                class_name = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+
+
+</mapper>

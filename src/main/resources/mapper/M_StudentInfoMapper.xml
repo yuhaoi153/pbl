@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_StudentInfoMapper">
+    <insert id="batchInsertTeacherRole">
+        insert into miniprograme.teacherRole (userId, title,teacherName,school)
+        values
+        <foreach collection="teacherRoleList" item="teacherRole" separator=",">
+            (#{teacherRole.userId}, #{teacherRole.title}, #{teacherRole.teacherName}, #{teacherRole.school})
+        </foreach>
+    </insert>
+    <insert id="batchInsertStudentInfo">
+        insert into miniprograme.studentInfo(userId,studentName,grade,className,year,school)
+        values
+        <foreach collection="studentInfoList" item="studentInfo" separator=",">
+            (#{studentInfo.userId}, #{studentInfo.studentName}, #{studentInfo.grade}, #{studentInfo.className}, #{studentInfo.year}, #{studentInfo.school})
+        </foreach>
+    </insert>
+    <update id="batchUpdateStudentInfo">
+        <foreach collection="updatedStudentInfoList" item="studentInfo" separator=";">
+            update miniprograme.studentInfo
+            set studentNumber = #{studentInfo.studentNumber}
+            where userId = #{studentInfo.userId}
+        </foreach>
+    </update>
+
+
+    <delete id="deleteStudentInfoByUserIds">
+        delete from miniprograme.studentInfo
+        where userId in
+        <foreach collection="userList" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </delete>
+    <delete id="deleteStudentInfoByUserIdList">
+        delete from miniprograme.studentInfo
+        where userId in
+        <foreach collection="idList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="getStudentInfoByUserIdList" resultType="flyfish.pojo.M_StudentInfo">
+        select * from miniprograme.studentInfo
+        where userId in
+        <foreach collection="idList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

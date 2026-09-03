@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_MoringReadingCheckNameMapper">
+
+
+
+    <select id="getReadingCheckList" resultType="flyfish.pojo.VO.M_MoringReadingCheckVO">
+
+        SELECT * FROM miniprograme.morningReadingCheckName <where>
+        <if test="weekday != null and weekday != ''">
+            AND weekday = #{weekday}</if>
+        <if test="school != null and school != ''">
+            AND school = #{school}</if> </where>
+    </select>
+</mapper>

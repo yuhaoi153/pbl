@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.RecordTaskMapper">
+
+    <insert id="batchupload">
+        insert into homework.recordtask (subject, content, name, class_number,checkdate, create_time,  completed,supplementary,school)
+        values <foreach collection="originrecordList" item="or" separator="," >
+        (#{or.subject},#{or.content},#{or.name},#{or.classNumber},#{or.checkdate},#{or.createTime},#{or.completed},#{or.supplementary},#{or.school})
+    </foreach>
+    </insert>
+
+
+    <update id="updatecompleted">
+        UPDATE homework.recordtask set completed = #{completed} , create_time = #{nowtime}
+        Where content = #{content} and class_number = #{classNumber}  and subject = #{subject} and school = #{school}
+        and name in <foreach collection="nameList" item="name" separator="," open="(" close=")">
+        #{name}
+    </foreach>
+
+    </update>
+
+    <update id="updatenull">
+        update homework.record set completed = #{changecompleted}, create_time = #{nowtime}
+        where content = #{content} and class_number = #{classNumber} and checkdate = #{checkdate} and subject = #{subject} and completed is null
+    </update>
+
+    <update id="updatelevel">
+        UPDATE homework.record set completed = #{completed} , create_time = #{nowtime} , level =#{level1}, revision = #{revision}
+        Where content = #{content} and class_number = #{classNumber} and checkdate = #{checkdate} and subject = #{subject} and
+        student_number in <foreach collection="studentNumberList" separator="," item="sn" open="(" close=")">
+        #{sn}
+    </foreach>
+        and name in <foreach collection="nameList" item="name" separator="," open="(" close=")">
+        #{name}
+    </foreach>
+    </update>
+    <update id="parentConfirm">
+        update homework.recordtask set completed = 2 where  id in <foreach collection="ids" item="id" separator="," open="(" close=")">  #{id} </foreach>
+    </update>
+
+    <select id="getalluncompleted" resultType="flyfish.pojo.Record">
+        select * from homework.record
+        <where>
+            <if test="uncompleted != null ">
+                and completed = #{uncompleted}
+            </if>
+            <if test="classNumber != null and classNumber !=''">
+                and class_number = #{classNumber}
+            </if>
+            <if test="subject != null and subject !=''">
+                and subject = #{subject}
+            </if>
+            <if test="checkdate != null">
+                and checkdate = #{checkdate}
+            </if>
+        </where>
+    </select>
+    <select id="getlevelfeedback" resultType="java.lang.String">
+        select name from homework.record where class_number = #{classNumber} and content = #{content} and checkdate = #{checkdate} and level= #{level} and subject = #{subject}
+
+    </select>
+    <select id="pageQueryClass" resultType="flyfish.pojo.Record">
+        select * from homework.record
+
+        <where>
+            <if test="content!= null and content != ''">
+                and content like concat('%',#{content},'%')
+            </if>
+            <if test="classNumber!= null and classNumber != ''">
+                and class_number = #{classNumber}
+            </if>
+            <if test="subject!= null and subject != ''">
+                and subject = #{subject}
+            </if>
+            <if test="startdate!= null ">
+                and checkdate between #{startdate} and #{enddate}
+            </if>
+
+        </where>
+        order by checkdate desc, subject desc;
+    </select>
+
+
+    <select id="getByNameDateClass" resultType="flyfish.pojo.Record">
+
+        select * from homework.record
+
+        <where>
+            <if test="content!= null and content != ''">
+                and content like concat('%',#{content},'%')
+            </if>
+            <if test="classNumber!= null and classNumber != ''">
+                and class_number = #{classNumber}
+            </if>
+            <if test="subject!= null and subject != ''">
+                and subject = #{subject}
+            </if>
+            <if test="startdate!= null ">
+                and checkdate between #{startdate} and #{enddate}
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+
+        </where>
+        order by checkdate desc, subject desc;
+    </select>
+    <select id="queryALlPassContent" resultType="flyfish.pojo.PassTask">
+        select * from homework.recordtask
+        where id in <foreach collection="ids" item="id" separator="," open="(" close=")">  #{id} </foreach>
+    </select>
+    <select id="queryPassData" resultType="flyfish.pojo.VO.ParentPassTaskVO">
+        select * from homework.recordtask
+        <where> class_number = #{classNumber} and completed = 0 and name = #{name}
+            <if test="subject != null and subject != ''">
+                and subject = #{subject}</if>
+        </where>
+        order by checkdate desc
+
+    </select>
+
+
+</mapper>

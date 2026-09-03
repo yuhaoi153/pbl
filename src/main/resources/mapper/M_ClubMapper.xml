@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ClubMapper">
+
+<!--批量插入数据-->
+    <insert id="insertClubList">
+        insert  into miniprograme.clubs (club_name, teacher, description, maxStudents, grade,deadline, position, category, admission_semester)
+    values  <foreach collection="clubList" item="club" separator=",">
+        (
+        #{club.clubName}, #{club.teacher}, #{club.description},
+        #{club.maxStudents}, #{club.grade}, #{club.deadline},
+        #{club.position}, #{club.category}, #{club.admissionSemester}
+        )
+    </foreach>
+    </insert>
+    <delete id="deleteAllSameClubs">
+delete from miniprograme.clubs where <foreach collection="clubList" item="club" separator="or">
+    (club_name = #{club.clubName} and grade = #{club.grade} and admission_semester = #{club.admissionSemester})
+</foreach>
+
+    </delete>
+    <delete id="deleteClubsByGrade">
+        delete from miniprograme.clubs
+        <where>
+            <if test="grade != null">
+                and grade = #{grade}
+            </if>
+            <if test="admissionSemester != null">
+                and admission_semester = #{admissionSemester}
+            </if>
+        </where>
+    </delete>
+
+    <!--    拿到某年级的所有社团id，但是年级可能为null-->
+
+    <select id="getClubIdsByGrade" resultType="java.lang.Integer">
+        select id from miniprograme.clubs
+        <where>
+            <if test="grade != null">
+                and grade = #{grade}
+            </if>
+            <if test="admissionSemester != null">
+                and admission_semester = #{admissionSemester}
+            </if>
+
+
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_UserMapper">
+<!--    插入数据同时拿到自增主键-->
+    <insert id="insertUserAndGetId" useGeneratedKeys="true" keyProperty="id">
+        insert  into miniprograme.user (name, phone, role, password,school)
+        values  (#{name}, #{phone}, #{role}, #{password}, #{school})
+
+    </insert>
+    <insert id="batchInsertUser"
+            useGeneratedKeys="true"
+    keyProperty="id">
+        insert into miniprograme.user (name, phone, role, password, school)
+        values
+        <foreach collection="userList" item="user" separator=",">
+            (#{user.name}, #{user.phone}, #{user.role}, #{user.password}, #{user.school})
+        </foreach>
+    </insert>
+    <insert id="insertStudentUser" useGeneratedKeys="true" keyProperty="id">
+        insert  into miniprograme.user (name, phone, role, password,school)
+        values  (#{studentName}, #{phone}, '学生', #{password}, #{school})
+
+    </insert>
+
+
+    <delete id="deleteAllSameClubs">
+delete from miniprograme.clubs where <foreach collection="clubList" item="club" separator="or">
+    (club_name = #{club.clubName} and grade = #{club.grade} and admission_semester = #{club.admissionSemester})
+</foreach>
+
+    </delete>
+    <delete id="deleteAllSameUsers">
+        delete from miniprograme.user where <foreach collection="userList" item="user" separator="or">
+            (name = #{user.name} and phone = #{user.phone} and role = #{user.role})
+        </foreach>
+    </delete>
+    <delete id="deleteUsersByIds">
+        delete from miniprograme.user
+        where id in
+        <foreach collection="studentIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteTeacherUser">
+        delete from miniprograme.user
+        WHERE (name, school) IN
+        <foreach collection="userList" item="user" separator="," open="(" close=")">
+            (#{user.name}, #{user.school})
+        </foreach>
+    </delete>
+    <delete id="deleteStudentUser">
+        delete from miniprograme.user
+        WHERE (name, school,phone) IN
+        <foreach collection="userList" item="user" separator="," open="(" close=")">
+            (#{user.name}, #{user.school},#{user.phone})
+        </foreach>
+    </delete>
+    <delete id="batchDeleteTeacherUserByIdList">
+        delete from miniprograme.user
+        where id in
+        <foreach collection="idList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="getIdsByUserList" resultType="java.lang.Integer">
+        select id from miniprograme.user
+        WHERE (name, school,phone) IN
+        <foreach collection="userList" item="user" separator="," open="(" close=")">
+            (#{user.name}, #{user.school},#{user.phone})
+        </foreach>
+    </select>
+
+</mapper>

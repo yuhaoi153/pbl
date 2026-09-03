@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.StudentInfoMapper">
+    <insert id="addStudentInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into homework.studentInfo (name, student_number, class_number,school,pinyin,year) VALUES (#{name},#{studentNumber},#{classNumber},#{school},#{pinyin},#{year})
+    </insert>
+    <insert id="batchInsertStudentInfo">
+        insert into homework.studentInfo (name, student_number, class_number,school,pinyin,year) VALUES
+        <foreach collection="studentInfoList" item="studentInfo" separator=",">
+            (#{studentInfo.name}, #{studentInfo.studentNumber}, #{studentInfo.classNumber}, #{studentInfo.school}, #{studentInfo.pinyin}, #{studentInfo.year})
+        </foreach>
+    </insert>
+
+
+    <select id="getnameList" resultType="java.lang.String">
+        select name from homework.studentInfo where student_number in
+        <foreach collection="studentNumberList" separator="," item="snum" open="(" close=")" >
+            #{snum}
+        </foreach>
+        and class_number = #{classNumber} and school = #{school}
+    </select>
+
+    <select id="getnewStudentNumberList" resultType="java.lang.String">
+        select student_number from homework.studentInfo where name in
+        <foreach collection="nameList" separator="," item="name" open="(" close=")" >
+            #{name}
+        </foreach>
+        and class_number = #{classNumber} and school = #{school}
+    </select>
+
+
+
+    <select id="getAllContentByCLassName" resultType="flyfish.pojo.StudentInfo">
+        SELECT * FROM homework.studentInfo
+        <where>
+            <if test="classNumber != null and classNumber != ''">
+                AND class_number = #{classNumber}
+            </if>
+            <if test="name != null and name !=''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="school != null and school != ''">
+                AND school = #{school}
+            </if>
+        </where>
+
+    </select>
+    <select id="queryClassCount" resultType="java.lang.Integer">
+        select count(distinct name) from homework.studentInfo where class_number = #{classNumber}
+    </select>
+    <select id="getStudentNumberList" resultType="java.lang.String">
+        select student_number from homework.studentInfo where class_number = #{classNumber} and school = #{school} and pinyin in <foreach collection="bestMatchList" separator="," item="pinyin" open="(" close=")" >
+            #{pinyin}
+        </foreach>
+    </select>
+</mapper>

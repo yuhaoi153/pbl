@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.HomeWorkContentMapper">
+    <insert id="addStudent">
+        insert into homework.studentInfo (name,student_number,class_number)
+        values <foreach collection="students" item="st" separator=",">
+        (#{st.name},#{st.studentNumber},#{username})
+    </foreach>
+    </insert>
+
+    <delete id="batchDelete">
+        delete from homework.homeworkcontent where class_number = #{classNumber} and subject = #{subject} and content in <foreach
+            collection="contentList" separator="," item="content" open="(" close=")">
+        #{content}
+    </foreach>
+    </delete>
+
+    <select id="queryContent" resultType="java.lang.String">
+        select content from homework.homeworkcontent
+        <where>
+            <if test = "content != null and content !=''"> and content = #{content}</if>
+            <if test = "subject != null and subject !=''">and subject = #{subject}</if>
+            <if test = "classNumber != null and classNumber !=''">and class_number = #{classNumber}</if>
+            <if test = "type != null and type !=''">and type = #{type}</if>
+<if test="school != null and school != ''">and school = #{school}</if>
+        </where>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ClubResultMapper">
+
+
+    <delete id="deleteClubResultsByStudentIds">
+        DELETE FROM miniprograme.clubResults
+        WHERE studentId IN
+        <foreach collection="selectedStudents" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteClubResultsByClubIds">
+        delete from miniprograme.clubResults
+        where clubId in
+        <foreach collection="clubIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach> and admissionSemester = #{admissionSemester}
+    </delete>
+</mapper>

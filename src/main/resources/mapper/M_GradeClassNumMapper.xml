@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_GradeClassNumMapper">
+
+    <insert id="editGradeClassNum">
+        insert into miniprograme.grade_classname (grade,class_name,school)
+        values <foreach collection="classList" item="cl" separator=",">
+        (#{cl.grade},#{cl.className},#{cl.school})
+    </foreach>
+    </insert>
+
+    <insert id="newGradeClassNum" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+        insert into miniprograme.grade_classname (grade,class_Name,school,create_time)
+        values (#{grade},#{className},#{school},#{createTime})
+    </insert>
+    <update id="editGradeClassName">
+        update miniprograme.grade_classname
+        set class_Name = #{className} and grade = #{grade}
+        and school = #{school}
+        where id = #{id}
+    </update>
+    <delete id="deleteGradeClassNumByIdList">
+        delete from miniprograme.grade_classname where id in
+        <foreach collection="idList" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getClassIdList" resultType="java.lang.Integer">
+        select id from miniprograme.grade_classname where class_Name in
+        <foreach collection="relationList" separator="," item="rl" open="(" close=")">
+            #{rl.className}
+        </foreach> and school = #{relationList[0].school}
+    </select>
+    <select id="getClassNameById" resultType="java.lang.String">
+        select class_Name from miniprograme.grade_classname where id in
+        <foreach collection="classIdList" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach> and school = #{school}
+    </select>
+    <select id="getTeacherInfoByTeacherName" resultType="flyfish.pojo.M_TeacherInfo">
+            select * from miniprograme.teacherList
+            <where>
+            <if test="content != null and content != ''">
+                teacher_name = #{content}
+            </if>
+           and school = #{school}
+            </where>
+    </select>
+    <select id="getTeacherInfoBySubject" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.teacherList
+        <where>
+            <if test="content != null and content != ''">
+                subject = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+    <select id="getTeacherInfoByGrade" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.grade_classname
+        <where>
+            <if test="content != null and content != ''">
+                grade = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+    <select id="getTeacherInfoByClassName" resultType="flyfish.pojo.M_TeacherInfo">
+        select * from miniprograme.grade_classname
+        <where>
+            <if test="content != null and content != ''">
+                class_Name = #{content}
+            </if>
+            and school = #{school}
+        </where>
+    </select>
+
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.ExcelMapper">
+    <insert id="addStudent">
+        insert into homework.studentInfo (name,student_number,class_number,pinyin)
+        values <foreach collection="students" item="st" separator=",">
+        (#{st.name},#{st.studentNumber},#{username},#{st.pinyin})
+    </foreach>
+    </insert>
+
+
+
+</mapper>

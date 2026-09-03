@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ReadingFeedbackMapper">
+
+
+    <insert id="addClassNameList">
+        insert into miniprograme.single_readfeedback (grade,class_name,time_zone,check_date,create_time,school)
+        values <foreach collection="feedBackList" item="fb" separator=",">
+        (#{fb.grade},#{fb.className},#{fb.timeZone},#{fb.checkDate},#{fb.createTime},#{fb.school})</foreach>
+    </insert>
+    <delete id="deleteReadingFeedbackByIdList">
+        delete from miniprograme.single_readfeedback
+        <where>
+<if test="ids != null and ids.size() > 0">
+            id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            </if>
+            and school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="content != null">
+                and class_name = #{content}
+            </if>
+        </where>
+    </delete>
+    <delete id="deleteFeedbackByIdListByGrade">
+        delete from miniprograme.single_readfeedback
+        <where>
+
+
+            school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="ids != null and ids.size() > 0">
+                and grade in
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="content != null">
+                and grade = #{content}
+            </if>
+        </where>
+    </delete>
+    <select id="getClassCount" resultType="flyfish.pojo.VO.M_ClassCountVO">
+        select class_name as className, count(class_name) as classCount
+        from miniprograme.single_readfeedback
+        where school = #{school}
+        <!-- 使用 <foreach> 标签处理 timeZone 列表 -->
+        <if test="timeZone != null and timeZone.size() > 0">
+            and time_zone in
+            <foreach item="item" collection="timeZone" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and check_date between #{startDate} and #{endDate}
+        group by class_name
+        order by classCount desc
+        <if test="topNum != null">
+            limit #{topNum}
+        </if>
+    </select>
+    <select id="getGradeClassCount" resultType="flyfish.pojo.VO.M_ClassCountVO">
+        select class_name as className, count(class_name) as classCount
+        from miniprograme.single_readfeedback
+        where school = #{school}
+        <!-- 检查 timeZone 列表是否不为空 -->
+        <if test="timeZone != null and timeZone.size() > 0">
+            and time_zone in
+            <!-- 遍历 timeZone 列表生成 SQL 片段 -->
+            <foreach item="item" collection="timeZone" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and check_date between #{startDate} and #{endDate}
+        and grade = #{grade}
+        group by class_name
+        order by classCount desc
+        <if test="topNum != null">
+            limit #{topNum}
+        </if>
+    </select>
+    <select id="getMaxAllClassCount" resultType="java.lang.Integer">
+        SELECT MAX(classCount) AS maxClassCount
+        FROM (
+        SELECT COUNT(class_name) AS classCount
+        FROM miniprograme.single_readfeedback
+        <where>
+            time_zone IN
+            <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                #{tz}
+            </foreach>
+            AND check_date BETWEEN #{startDate} AND #{endDate}
+            AND school = #{school}
+            GROUP BY class_name
+        </where>
+        ) subquery
+    </select>
+    <select id="getMaxGradeCount" resultType="java.lang.Integer">
+        select Max(gradeCount) as maxGradeCount from (
+            select count(grade) as gradeCount from miniprograme.single_readfeedback
+            <where>
+                time_zone IN
+                <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                    #{tz}
+                </foreach>
+                AND check_date BETWEEN #{startDate} AND #{endDate}
+                AND school = #{school}
+                group by grade
+            </where>
+        ) subquery
+    </select>
+    <select id="getAllRecordCount" resultType="java.lang.Integer">
+        select count(*) from miniprograme.single_readfeedback
+        <where>
+            time_zone IN
+            <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                #{tz}
+            </foreach>
+            AND check_date BETWEEN #{startDate} AND #{endDate}
+            AND school = #{school}
+        </where>
+    </select>
+    <select id="getAllClassName" resultType="java.lang.String">
+        select distinct class_name from miniprograme.single_readfeedback
+        <where>
+            time_zone IN
+            <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                #{tz}
+            </foreach>
+            AND check_date BETWEEN #{startDate} AND #{endDate}
+            AND school = #{school}
+        </where>
+    </select>
+
+    <select id="getFeedbackDataByClassName" resultType="flyfish.pojo.VO.M_FeedbackVO">
+        select * from miniprograme.single_readfeedback
+        <where>
+            time_zone = #{timeZone}
+            AND check_date = #{checkDate}
+            AND school = #{school}
+            <if test="content != null">
+                AND class_name = #{content}
+            </if>
+        </where>
+    </select>
+    <select id="getFeedbackDataByGrade" resultType="flyfish.pojo.VO.M_FeedbackVO">
+        select * from miniprograme.single_readfeedback
+        <where>
+            time_zone = #{timeZone}
+            AND check_date = #{checkDate}
+            AND school = #{school}
+            <if test="content != null">
+                AND grade = #{content}
+            </if>
+        </where>
+    </select>
+    <select id="getSelfmanageReadLeasonGradeClassCountScore" resultType="flyfish.pojo.VO.M_ClassCountVO">
+
+
+        <!-- 用LEFT(grade,1)截取grade第一个字符，再把class_name的第三个字符拿出来和"班" -->
+        select CONCAT(IFNULL(LEFT(grade, 1), ''), IFNULL(SUBSTRING(class_name, 3, 1),''), '班') as className,
+        count(class_name) * #{score} as classCount
+        from miniprograme.single_readfeedback
+        where school = #{school}
+        <if test="label !=null and label != ''">
+            and time_zone  = #{label}
+        </if>
+        <if test="grade !=null and grade != ''">
+            and grade = #{grade}
+        </if>
+        and check_date between #{startDate} and #{endDate}
+        group by grade, class_name  <!-- 仍需按完整grade+class_name分组，避免首字符相同的不同年级被合并 -->
+        order by classCount desc
+    </select>
+    <select id="getReadingFeedbackByDateRange" resultType="flyfish.pojo.M_SingleReadTeacher">
+        select * from miniprograme.singleReadTeacherRecord where school=#{school} and check_date between #{startDate} and #{endDate} <if test="grade !=null and grade != ''">
+            and grade = #{grade} </if>
+    </select>
+    <select id="getReadingSelfmanageFeedbackByDateRange" resultType="flyfish.pojo.M_SingleReadFeedback">
+        select * from miniprograme.single_readfeedback where school=#{school} and check_date between #{startDate} and #{endDate} and time_zone=#{selectTimeZone} <if test="grade !=null and grade != ''">
+            and grade = #{grade} </if>
+    </select>
+
+
+</mapper>

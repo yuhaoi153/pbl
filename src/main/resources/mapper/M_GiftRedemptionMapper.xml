@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_GiftRedemptionMapper">
+
+    <insert id="addConvertScore">
+insert into homework.giftRedemption (situation,giftName,giftValue,className,subject,createTime,school,name,year,checkDate) VALUES
+    <foreach collection="nameList" item="name" separator=",">
+        (#{situation},#{giftName},#{giftValue},#{classNumber},#{subject},#{updateTime},#{school},#{name},#{year},#{checkDate})
+    </foreach>
+
+
+    </insert>
+
+
+</mapper>

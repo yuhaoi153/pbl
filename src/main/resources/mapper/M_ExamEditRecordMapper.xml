@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_ExamEditRecordMapper">
+
+
+    <insert id="insertSingleRecord">
+        INSERT INTO miniprograme.examEditRecord
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="school != null and school != ''">school,</if>
+        <if test="databaseName != null and databaseName != ''">databaseName,</if>
+        <if test="databaseId != null and databaseId != ''">databaseId,</if>
+        <if test="actionWay != null and actionWay != ''">actionWay,</if>
+        <if test="createTime != null">createTime,</if>
+        <if test="contentInfo != null and contentInfo != ''">contentInfo,</if>
+        <if test="classOrName != null and classOrName != ''">classOrName,</if>
+        <if test="updateName != null and updateName != ''">updateName,</if>
+        <if test="supplementary != null and supplementary != ''">supplementary,</if>
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+        <if test="school != null and school != ''">#{school},</if>
+        <if test="databaseName != null and databaseName != ''">#{databaseName},</if>
+        <if test="databaseId != null and databaseId != ''">#{databaseId},</if>
+        <if test="actionWay != null and actionWay != ''">#{actionWay},</if>
+        <if test="createTime != null">#{createTime},</if>
+        <if test="contentInfo != null and contentInfo != ''">#{contentInfo},</if>
+        <if test="classOrName != null and classOrName != ''">#{classOrName},</if>
+        <if test="updateName != null and updateName != ''">#{updateName},</if>
+        <if test="supplementary != null and supplementary != ''">#{supplementary},</if>
+    </trim>
+</insert>
+
+</mapper>

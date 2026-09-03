@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.FeedBackMapper">
+    <insert id="batchadd">
+        insert into autoEvaluation.feedback(grade, class_name, teacher_name, subject, time_zone, check_date, create_time, update_time, censor)
+        VALUES
+        <foreach collection="feedBacks" item="fb" separator=",">
+            (#{fb.grade},#{fb.className},#{fb.teacherName},#{fb.subject},#{fb.timeZone},#{fb.checkDate},#{fb.createTime},#{fb.updateTime},#{fb.censor})
+        </foreach>
+    </insert>
+
+
+    <delete id="deletebyDateGrade">
+        delete from autoEvaluation.feedback where grade = #{grade} and check_date = #{checkDate}
+    </delete>
+</mapper>

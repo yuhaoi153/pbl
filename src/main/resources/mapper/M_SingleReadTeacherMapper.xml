@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="flyfish.mapper.M_SingleReadTeacherRecordMapper">
+
+
+
+    <insert id="addTeacherFeedback">
+        insert into miniprograme.singleReadTeacherRecord (teacher_name, subject, school, time_zone, check_date, create_time, class_name,grade)
+        values <foreach collection="singleReadTeacherList" item="tr" separator=",">
+        (#{tr.teacherName},#{tr.subject},#{tr.school},#{tr.timeZone},#{tr.checkDate},#{tr.createTime},#{tr.className},#{tr.grade})</foreach>
+    </insert>
+    <delete id="deleteTeacherFeedbackByTeacherNameIds">
+        delete from miniprograme.singleReadTeacherRecord
+        <where>
+           school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="ids != null and ids.size() > 0">
+                and teacher_name in
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="content != null and content != ''">
+                and teacher_name = #{content}
+            </if>
+        </where>
+    </delete>
+    <delete id="deleteTeacherFeedbackBySubjectIds">
+        delete from miniprograme.singleReadTeacherRecord
+        <where>
+            school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="content != null and content != ''">
+                and subject = #{content}
+            </if>
+        </where>
+    </delete>
+    <delete id="deleteTeacherFeedbackByClassName">
+        delete from miniprograme.singleReadTeacherRecord
+        <where>
+            school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test = "ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="content != null and content != ''">
+                and class_name = #{content}
+            </if>
+        </where>
+    </delete>
+    <select id="getSubjectCount" resultType="flyfish.pojo.VO.M_ClassCountVO">
+        select subject as className, count(subject) as classCount
+        from miniprograme.singleReadTeacherRecord
+        where school = #{school}
+        <!-- 处理 timeZone 列表 -->
+        <if test="timeZone != null and timeZone.size() > 0">
+            and time_zone in
+            <foreach item="item" collection="timeZone" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        and check_date between #{startDate} and #{endDate}
+        group by subject
+        order by classCount desc
+        <if test="topNum != null">
+            limit #{topNum}
+        </if>
+    </select>
+    <select id="getTeacherCount" resultType="flyfish.pojo.VO.M_ClassCountVO">
+        select teacher_name as className, count(teacher_name) as classCount
+        from miniprograme.singleReadTeacherRecord
+        where school = #{school}
+        <!-- 判断 timeZoneList 是否不为空且长度大于 0 -->
+        <if test="timeZone != null and timeZone.size() > 0">
+            and time_zone in
+            <!-- 遍历 timeZoneList 列表 -->
+            <foreach item="tz" collection="timeZone" open="(" separator="," close=")">
+                #{tz}
+            </foreach>
+        </if>
+        and check_date between #{startDate} and #{endDate}
+        group by teacher_name
+        order by classCount desc
+        <!-- 根据 topNum 是否为空决定是否添加 limit 子句 -->
+        <if test="topNum != null">
+            limit #{topNum}
+        </if>
+    </select>
+    <select id="getMaxSubjectCount" resultType="java.lang.Integer">
+        select Max(subjectCount) as maxSubjectCount from (
+            select count(subject) as subjectCount from miniprograme.singleReadTeacherRecord
+            <where>
+                time_zone IN
+                <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                    #{tz}
+                </foreach>
+                AND check_date BETWEEN #{startDate} AND #{endDate}
+                AND school = #{school}
+                group by subject
+            </where>
+        ) subquery
+    </select>
+    <select id="getMaxTeacherCount" resultType="java.lang.Integer">
+        select Max(teacherCount) as maxTeacherCount from (
+            select count(teacher_name) as teacherCount from miniprograme.singleReadTeacherRecord
+            <where>
+                time_zone IN
+                <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                    #{tz}
+                </foreach>
+                AND check_date BETWEEN #{startDate} AND #{endDate}
+                AND school = #{school}
+                group by teacher_name
+            </where>
+        ) subquery
+    </select>
+    <select id="getAllRecordCount" resultType="java.lang.Integer">
+        select count(*) from miniprograme.singleReadTeacherRecord
+       <where>
+            time_zone IN
+            <foreach collection="timeZone" item="tz" open="(" close=")" separator=",">
+                #{tz}
+            </foreach>
+            AND check_date BETWEEN #{startDate} AND #{endDate}
+            AND school = #{school}
+        </where>
+    </select>
+    <select id="getSubject" resultType="java.lang.String">
+        select subject from miniprograme.singleReadTeacherRecord where school = #{school}
+    </select>
+    <select id="getTeacher" resultType="java.lang.String">
+        select teacher_name from miniprograme.singleReadTeacherRecord
+        where school = #{school}
+    </select>
+    <select id="getFeedbackDataByTeacherName" resultType="flyfish.pojo.VO.M_FeedbackVO">
+        select * from miniprograme.singleReadTeacherRecord
+        <where>
+           school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="content != null and content != ''">
+               and teacher_name = #{content}
+            </if>
+        </where>
+    </select>
+    <select id="getFeedbackDataBySubject" resultType="flyfish.pojo.VO.M_FeedbackVO">
+        select * from miniprograme.singleReadTeacherRecord
+        <where>
+            school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="content != null and content != ''">
+                and subject = #{content}
+            </if>
+        </where>
+    </select>
+    <select id="getFeedbackDataByClassName" resultType="flyfish.pojo.VO.M_FeedbackVO">
+        select * from miniprograme.singleReadTeacherRecord
+        <where>
+            school = #{school}
+            and check_date = #{checkDate}
+            and time_zone = #{timeZone}
+            <if test="content != null and content != ''">
+                and class_name = #{content}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
